@@ -29,7 +29,7 @@ public class RightClick {
 		if (blockToTransformTo == null)
 			return;
 		if (event.getWorld().isAirBlock(event.getPos().up())) {
-			event.getWorld().playSound(null, event.getPos(), SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			event.getWorld().playSound(event.getPlayer(), event.getPos(), SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			event.setResult(Event.Result.ALLOW);
 			event.getWorld().setBlockState(event.getPos(), ForgeRegistries.BLOCKS.getValue(blockToTransformTo).getDefaultState());
 			event.getPlayer().swingArm(event.getHand());
