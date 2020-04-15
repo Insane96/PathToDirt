@@ -20,37 +20,37 @@ public class ModConfig {
 		for (String entry : list) {
 			String[] split = entry.split(",");
 			if (split.length != 2) {
-				PathToDirt.LOGGER.warn("Invalid line \"%s\" for Overrides");
+				PathToDirt.LOGGER.warn("Invalid line \"%s\" for Overrides", entry);
 				continue;
 			}
 			ResourceLocation blockToTransform = null, tagToTransform = null;
 			if (split[0].startsWith("#")) {
 				String replaced = split[0].replace("#", "");
-				if (!ResourceLocation.isResouceNameValid(replaced)) {
+				tagToTransform = ResourceLocation.tryCreate(replaced);
+				if (tagToTransform == null) {
 					PathToDirt.LOGGER.warn("%s tag for Overrides is not valid", replaced);
 					continue;
 				}
-				tagToTransform = new ResourceLocation(replaced);
 			}
 			else {
-				if (!ResourceLocation.isResouceNameValid(split[0])) {
-					PathToDirt.LOGGER.warn("%s block for Overrides is not valid", split[0]);
+				blockToTransform = ResourceLocation.tryCreate(split[0]);
+				if (blockToTransform == null) {
+					PathToDirt.LOGGER.warn("%s block to transform for Overrides is not valid", split[0]);
 					continue;
 				}
-				blockToTransform = new ResourceLocation(split[0]);
 				if (!ForgeRegistries.BLOCKS.containsKey(blockToTransform)) {
-					PathToDirt.LOGGER.warn(String.format("%s item for Overrides seems to not exist", split[0]));
+					PathToDirt.LOGGER.warn("%s block to transform for Overrides seems to not exist", split[0]);
 					continue;
 				}
 			}
 			IdTagMatcher idTagToTransform = new IdTagMatcher(blockToTransform, tagToTransform);
-			if (!ResourceLocation.isResouceNameValid(split[1])) {
-				PathToDirt.LOGGER.warn("%s block for Overrides is not valid", split[1]);
+			ResourceLocation blockToTransformTo = new ResourceLocation(split[1]);
+			if (blockToTransform == null) {
+				PathToDirt.LOGGER.warn("%s block to transform to for Overrides is not valid", split[1]);
 				continue;
 			}
-			ResourceLocation blockToTransformTo = new ResourceLocation(split[1]);
 			if (!ForgeRegistries.BLOCKS.containsKey(blockToTransformTo)) {
-				PathToDirt.LOGGER.warn(String.format("%s item for Overrides seems to not exist", split[1]));
+				PathToDirt.LOGGER.warn("%s block to transform to for Overrides seems to not exist", split[1]);
 				continue;
 			}
 			Override override = new Override(idTagToTransform, blockToTransformTo);
