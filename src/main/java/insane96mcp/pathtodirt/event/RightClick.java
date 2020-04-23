@@ -4,6 +4,7 @@ import insane96mcp.pathtodirt.PathToDirt;
 import insane96mcp.pathtodirt.setup.ModConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -37,6 +38,9 @@ public class RightClick {
 				if (!event.getPlayer().isCreative())
 					holding.damageItem(1, event.getPlayer(), player -> player.sendBreakAnimation(event.getHand()));
 			}
+
+			event.setCanceled(true);
+			event.setCancellationResult(ActionResultType.SUCCESS);
 		}
 	}
 
