@@ -23,6 +23,13 @@ public class RightClick {
 	@SubscribeEvent
 	public static void eventRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
 		ItemStack holding = event.getItemStack();
+
+		//Check if the item is in the blacklist
+		for (ModConfig.IdTagMatcher idTag : ModConfig.itemBlacklist) {
+			if (idTag.doesItemMatch(holding.getItem()))
+				return;
+		}
+
 		if (!holding.getItem().getToolTypes(holding).contains(ToolType.SHOVEL))
 			return;
 		BlockState state = event.getWorld().getBlockState(event.getPos());

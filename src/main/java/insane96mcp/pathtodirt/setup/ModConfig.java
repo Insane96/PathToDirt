@@ -1,6 +1,7 @@
 package insane96mcp.pathtodirt.setup;
 
 import insane96mcp.pathtodirt.PathToDirt;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,13 +15,14 @@ import java.util.List;
 public class ModConfig {
 
 	public static List<Override> overrides = new ArrayList<>();
+	public static List<IdTagMatcher> itemBlacklist = new ArrayList<>();
 
 	private static void load() {
 		List<? extends String> list = Config.CommonConfig.overrides.get();
 		for (String entry : list) {
 			String[] split = entry.split(",");
 			if (split.length != 2) {
-				PathToDirt.LOGGER.warn("Invalid line \"%s\" for Overrides", entry);
+				PathToDirt.LOGGER.warn(String.format("Invalid line \"%s\" for Overrides", entry));
 				continue;
 			}
 			ResourceLocation blockToTransform = null, tagToTransform = null;
@@ -28,33 +30,59 @@ public class ModConfig {
 				String replaced = split[0].replace("#", "");
 				tagToTransform = ResourceLocation.tryCreate(replaced);
 				if (tagToTransform == null) {
-					PathToDirt.LOGGER.warn("%s tag for Overrides is not valid", replaced);
+					PathToDirt.LOGGER.warn(String.format("%s tag for Overrides is not valid", replaced));
 					continue;
 				}
 			}
 			else {
 				blockToTransform = ResourceLocation.tryCreate(split[0]);
 				if (blockToTransform == null) {
-					PathToDirt.LOGGER.warn("%s block to transform for Overrides is not valid", split[0]);
+					PathToDirt.LOGGER.warn(String.format("%s block to transform for Overrides is not valid", split[0]));
 					continue;
 				}
 				if (!ForgeRegistries.BLOCKS.containsKey(blockToTransform)) {
-					PathToDirt.LOGGER.warn("%s block to transform for Overrides seems to not exist", split[0]);
+					PathToDirt.LOGGER.warn(String.format("%s block to transform for Overrides seems to not exist", split[0]));
 					continue;
 				}
 			}
 			IdTagMatcher idTagToTransform = new IdTagMatcher(blockToTransform, tagToTransform);
 			ResourceLocation blockToTransformTo = new ResourceLocation(split[1]);
 			if (blockToTransform == null) {
-				PathToDirt.LOGGER.warn("%s block to transform to for Overrides is not valid", split[1]);
+				PathToDirt.LOGGER.warn(String.format("%s block to transform to for Overrides is not valid", split[1]));
 				continue;
 			}
 			if (!ForgeRegistries.BLOCKS.containsKey(blockToTransformTo)) {
-				PathToDirt.LOGGER.warn("%s block to transform to for Overrides seems to not exist", split[1]);
+				PathToDirt.LOGGER.warn(String.format("%s block to transform to for Overrides seems to not exist", split[1]));
 				continue;
 			}
 			Override override = new Override(idTagToTransform, blockToTransformTo);
 			overrides.add(override);
+		}
+
+		list = Config.CommonConfig.itemBlacklist.get();
+		for (String entry : list) {
+			ResourceLocation tag = null, item = null;
+			if (entry.startsWith("#")) {
+				String replaced = entry.replace("#", "");
+				tag = ResourceLocation.tryCreate(replaced);
+				if (tag == null) {
+					PathToDirt.LOGGER.warn(String.format("%s tag for Item Blacklist is not valid", replaced));
+					continue;
+				}
+			}
+			else {
+				item = ResourceLocation.tryCreate(entry);
+				if (item == null) {
+					PathToDirt.LOGGER.warn(String.format("%s item for Item Blacklist is not valid", entry));
+					continue;
+				}
+				if (!ForgeRegistries.ITEMS.containsKey(item)) {
+					PathToDirt.LOGGER.warn(String.format("%s item for Item blacklist seems to not exist", entry));
+					continue;
+				}
+			}
+			IdTagMatcher itemTagBlacklisted = new IdTagMatcher(item, tag);
+			itemBlacklist.add(itemTagBlacklisted);
 		}
 	}
 
@@ -78,6 +106,16 @@ public class ModConfig {
 			}
 			this.id = id;
 			this.tag = tag;
+		}
+
+		/*
+		 * Returns true if the item provided matches either the item id or is in the tag
+		 */
+		public boolean doesItemMatch(Item item) {
+			boolean matches = false;
+			matches |= item.getRegistryName().equals(this.id);
+			matches |= item.getTags().contains(this.tag);
+			return matches;
 		}
 	}
 
