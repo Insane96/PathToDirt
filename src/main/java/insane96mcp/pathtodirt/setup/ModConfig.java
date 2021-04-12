@@ -16,8 +16,10 @@ public class ModConfig {
 
 	public static List<Override> overrides = new ArrayList<>();
 	public static List<IdTagMatcher> itemBlacklist = new ArrayList<>();
+	public static boolean requireSneaking;
 
 	private static void load() {
+		requireSneaking = Config.CommonConfig.requireSneaking.get();
 		List<? extends String> list = Config.CommonConfig.overrides.get();
 		for (String entry : list) {
 			String[] split = entry.split(",");
