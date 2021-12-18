@@ -1,10 +1,11 @@
 package insane96mcp.pathtodirt.setup;
 
 import insane96mcp.pathtodirt.PathToDirt;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -30,14 +31,14 @@ public class ModConfig {
 			ResourceLocation blockToTransform = null, tagToTransform = null;
 			if (split[0].startsWith("#")) {
 				String replaced = split[0].replace("#", "");
-				tagToTransform = ResourceLocation.tryCreate(replaced);
+				tagToTransform = ResourceLocation.tryParse(replaced);
 				if (tagToTransform == null) {
 					PathToDirt.LOGGER.warn(String.format("%s tag for Overrides is not valid", replaced));
 					continue;
 				}
 			}
 			else {
-				blockToTransform = ResourceLocation.tryCreate(split[0]);
+				blockToTransform = ResourceLocation.tryParse(split[0]);
 				if (blockToTransform == null) {
 					PathToDirt.LOGGER.warn(String.format("%s block to transform for Overrides is not valid", split[0]));
 					continue;
@@ -66,14 +67,14 @@ public class ModConfig {
 			ResourceLocation tag = null, item = null;
 			if (entry.startsWith("#")) {
 				String replaced = entry.replace("#", "");
-				tag = ResourceLocation.tryCreate(replaced);
+				tag = ResourceLocation.tryParse(replaced);
 				if (tag == null) {
 					PathToDirt.LOGGER.warn(String.format("%s tag for Item Blacklist is not valid", replaced));
 					continue;
 				}
 			}
 			else {
-				item = ResourceLocation.tryCreate(entry);
+				item = ResourceLocation.tryParse(entry);
 				if (item == null) {
 					PathToDirt.LOGGER.warn(String.format("%s item for Item Blacklist is not valid", entry));
 					continue;
@@ -122,7 +123,7 @@ public class ModConfig {
 	}
 
 	@SubscribeEvent
-	public static void onModConfigEvent(final net.minecraftforge.fml.config.ModConfig.ModConfigEvent event) {
+	public static void onModConfigEvent(final ModConfigEvent event) {
 		ModConfig.load();
 	}
 }

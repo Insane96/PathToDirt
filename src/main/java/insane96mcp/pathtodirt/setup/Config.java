@@ -29,7 +29,7 @@ public class Config {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
 			overrides = builder
 					.comment("Write here a list of custom overrides when right clicking a block. It must be blockRightClicked,blockToTransformTo. Blocks must have the format modid:blockid. E.g. minecraft:coarse_dirt,minecraft:grass_path will make coarse dirt transform to path when right-clicked with a shovel. You can even use tags.")
-					.defineList("Overrides", Arrays.asList("minecraft:dirt,minecraft:grass_path", "minecraft:podzol,minecraft:grass_path", "minecraft:grass_path,minecraft:dirt", "minecraft:farmland,minecraft:dirt"), s -> s instanceof String);
+					.defineList("Overrides", Arrays.asList("minecraft:dirt_path,minecraft:dirt", "minecraft:farmland,minecraft:dirt"), s -> s instanceof String);
 			itemBlacklist = builder
 					.comment("Write here a list of items that shouldn't execute mod's path to dirt code. Items must have the format modid:itemid. Item Tags can be used.")
 					.defineList("Item Blacklist", Arrays.asList("quark:pickarang", "quark:flamerang"), s -> s instanceof String);
