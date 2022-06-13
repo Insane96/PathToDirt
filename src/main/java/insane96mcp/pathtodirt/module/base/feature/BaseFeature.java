@@ -3,11 +3,12 @@ package insane96mcp.pathtodirt.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.config.BlacklistConfig;
+import insane96mcp.insanelib.config.Blacklist;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.pathtodirt.setup.Config;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.world.BlockEvent;
@@ -23,13 +24,12 @@ import java.util.List;
 public class BaseFeature extends Feature {
 
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> transformListConfig;
-    private final BlacklistConfig itemBlacklistConfig;
+    private final Blacklist.Config itemBlacklistConfig;
 
     private static final List<String> transformListDefault = Arrays.asList("minecraft:dirt_path,minecraft:dirt", "minecraft:farmland,minecraft:dirt");
 
     public ArrayList<Transform> transformList;
-    public ArrayList<IdTagMatcher> itemBlacklist;
-    public Boolean itemBlacklistAsWhitelist = false;
+    public Blacklist itemBlacklist;
 
     public BaseFeature(Module module) {
         super(Config.builder, module, true, false);
@@ -40,42 +40,27 @@ public class BaseFeature extends Feature {
                         Blocks must have the format modid:blockid.
                         E.g. minecraft:farmland,minecraft:dirt will make farmland transform to path when right-clicked with a shovel. You can even use tags in blockRightClicked.""")
                 .defineList("Transform List", transformListDefault, o -> o instanceof String);
-        itemBlacklistConfig = new BlacklistConfig(Config.builder, "Item Blacklist", "Items and tags that should not erform the block transformation.", Arrays.asList(), false);
+        itemBlacklistConfig = new Blacklist.Config(Config.builder, "Item Blacklist", "Items and tags that should not erform the block transformation.")
+                .setDefaultList(List.of())
+                .setIsDefaultWhitelist(false)
+                .build();
     }
 
     @Override
     public void loadConfig() {
         super.loadConfig();
         this.transformList = Transform.parseList(this.transformListConfig.get());
-        this.itemBlacklist = (ArrayList<IdTagMatcher>) IdTagMatcher.parseStringList(this.itemBlacklistConfig.listConfig.get());
-        this.itemBlacklistAsWhitelist = this.itemBlacklistConfig.listAsWhitelistConfig.get();
+        this.itemBlacklist = this.itemBlacklistConfig.get();
     }
 
     @SubscribeEvent
     public void onRightClick(BlockEvent.BlockToolModificationEvent event) {
-        if (!this.isEnabled())
-            return;
-        if (event.isSimulated())
-            return;
-        if (event.getToolAction() != ToolActions.SHOVEL_FLATTEN)
-            return;
-        if (event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true) != null)
-            return;
-        if (event.getContext() != null && !event.getContext().getLevel().isEmptyBlock(event.getPos().above()))
-            return;
-
-        boolean isInWhitelist = false;
-        boolean isInBlacklist = false;
-        for (IdTagMatcher blacklistEntry : this.itemBlacklist) {
-            if (blacklistEntry.matchesItem(event.getHeldItemStack().getItem(), null)) {
-                if (!this.itemBlacklistAsWhitelist)
-                    isInBlacklist = true;
-                else
-                    isInWhitelist = true;
-                break;
-            }
-        }
-        if (isInBlacklist || (!isInWhitelist && this.itemBlacklistAsWhitelist))
+        if (!this.isEnabled()
+                || event.isSimulated()
+                || event.getToolAction() != ToolActions.SHOVEL_FLATTEN
+                || event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true) != null
+                || event.getContext() != null && !event.getContext().getLevel().isEmptyBlock(event.getPos().above())
+                || this.itemBlacklist.isBlackWhiteListed(event.getHeldItemStack().getItem()))
             return;
 
         for (Transform transform : this.transformList) {
@@ -83,16 +68,16 @@ public class BaseFeature extends Feature {
                 continue;
 
             event.setResult(Event.Result.ALLOW);
-            event.setFinalState(ForgeRegistries.BLOCKS.getValue(transform.blockTo).defaultBlockState());
+            event.setFinalState(transform.blockTo.defaultBlockState());
             break;
         }
     }
 
     public static class Transform {
         public IdTagMatcher blockFrom;
-        public ResourceLocation blockTo;
+        public Block blockTo;
 
-        public Transform(IdTagMatcher blockFrom, ResourceLocation blockTo) {
+        public Transform(IdTagMatcher blockFrom, Block blockTo) {
             this.blockFrom = blockFrom;
             this.blockTo = blockTo;
         }
@@ -117,8 +102,13 @@ public class BaseFeature extends Feature {
                     LogHelper.warn("%s id is not valid", split[1]);
                     continue;
                 }
+                Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+                if (block == null) {
+                    LogHelper.warn("%s block doesn't exist", split[1]);
+                    continue;
+                }
 
-                tranforms.add(new Transform(idTagMatcher, resourceLocation));
+                tranforms.add(new Transform(idTagMatcher, block));
             }
             return tranforms;
         }
