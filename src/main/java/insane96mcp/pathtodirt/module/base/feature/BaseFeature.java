@@ -60,7 +60,7 @@ public class BaseFeature extends Feature {
                 || event.getToolAction() != ToolActions.SHOVEL_FLATTEN
                 || event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true) != null
                 || event.getContext() != null && !event.getContext().getLevel().isEmptyBlock(event.getPos().above())
-                || this.itemBlacklist.isBlackWhiteListed(event.getHeldItemStack().getItem()))
+                || this.itemBlacklist.isItemBlackOrNotWhiteListed(event.getHeldItemStack().getItem()))
             return;
 
         for (Transform transform : this.transformList) {

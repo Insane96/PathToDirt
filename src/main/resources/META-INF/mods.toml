@@ -25,6 +25,6 @@ Simple mod that let you transform Path and Farmland back to Dirt
 [[dependencies.pathtodirt]]
     modId="insanelib"
     mandatory=true
-    versionRange="[1.5.0,)"
+    versionRange="[1.5.1,)"
     ordering="NONE"
     side="BOTH"
