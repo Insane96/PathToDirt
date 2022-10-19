@@ -1,14 +1,12 @@
 package insane96mcp.pathtodirt.setup;
 
+import insane96mcp.insanelib.base.Module;
 import insane96mcp.pathtodirt.PathToDirt;
-import insane96mcp.pathtodirt.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Mod.EventBusSubscriber(modid = PathToDirt.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class Config {
 	public static final ForgeConfigSpec COMMON_SPEC;
 	public static final CommonConfig COMMON;
@@ -24,12 +22,7 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			Modules.init();
+			Module.loadFeatures(PathToDirt.MOD_ID, this.getClass().getClassLoader(), builder);
 		}
-	}
-
-	@SubscribeEvent
-	public static void onModConfigEvent(final ModConfigEvent event) {
-		Modules.loadConfig();
 	}
 }

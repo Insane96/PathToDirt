@@ -1,6 +1,7 @@
 package insane96mcp.pathtodirt;
 
 
+import insane96mcp.pathtodirt.module.Modules;
 import insane96mcp.pathtodirt.setup.Config;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +17,7 @@ public class PathToDirt {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public PathToDirt() {
+        Modules.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 }

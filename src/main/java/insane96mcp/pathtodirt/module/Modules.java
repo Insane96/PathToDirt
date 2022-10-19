@@ -1,15 +1,16 @@
 package insane96mcp.pathtodirt.module;
 
-import insane96mcp.pathtodirt.module.base.BaseModule;
+import insane96mcp.insanelib.base.Module;
+import insane96mcp.pathtodirt.PathToDirt;
+import insane96mcp.pathtodirt.setup.Config;
+import net.minecraftforge.common.IExtensibleEnum;
 
 public class Modules {
-    public static BaseModule base;
+    public static Module BaseModule;
 
     public static void init() {
-        base = new BaseModule();
-    }
-
-    public static void loadConfig() {
-        base.loadConfig();
+        BaseModule = Module.Builder.create(PathToDirt.RESOURCE_PREFIX + "base", "Dirt to Path")
+            .canBeDisabled(false)
+            .build();
     }
 }
