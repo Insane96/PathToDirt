@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Label(name = "Dirt to Path")
+@Label(name = "Path to Dirt")
 @LoadFeature(module = PathToDirt.RESOURCE_PREFIX + "base", canBeDisabled = false)
 public class BaseFeature extends Feature {
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> transformListConfig;
@@ -33,10 +33,10 @@ public class BaseFeature extends Feature {
     public static ArrayList<Transform> transformList;
 
     @Config
-    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation.")
+    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transofmrations above and not the default Dirt to Path transformation.")
     public static Blacklist itemBlacklist = new Blacklist(List.of(
             new IdTagMatcher(IdTagMatcher.Type.ID, "quark:pickarang"),
-            new IdTagMatcher(IdTagMatcher.Type.TAG, "quark:netherite_pickarang")
+            new IdTagMatcher(IdTagMatcher.Type.ID, "quark:netherite_pickarang")
     ), false);
 
     public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
