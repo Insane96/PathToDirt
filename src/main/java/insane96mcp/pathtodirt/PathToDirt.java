@@ -17,7 +17,6 @@ public class PathToDirt {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public PathToDirt() {
-        Modules.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 }
