@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.pathtodirt.PathToDirt;
 import insane96mcp.pathtodirt.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
 
@@ -24,7 +24,7 @@ public class Config {
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
 			Modules.init();
-			Module.loadFeatures(PathToDirt.MOD_ID, this.getClass().getClassLoader());
+			Module.loadFeatures(ModConfig.Type.COMMON, PathToDirt.MOD_ID, this.getClass().getClassLoader());
 		}
 	}
 }
