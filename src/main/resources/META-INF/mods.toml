@@ -13,18 +13,18 @@ Simple mod that let you transform Path and Farmland back to Dirt
 [[dependencies.pathtodirt]]
     modId="forge"
     mandatory=true
-    versionRange="[42,)"
+    versionRange="[44,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pathtodirt]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.1,)"
+    versionRange="[1.19.3,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pathtodirt]]
     modId="insanelib"
     mandatory=true
-    versionRange="[1.7.1,)"
+    versionRange="[1.8.0,)"
     ordering="NONE"
     side="BOTH"
