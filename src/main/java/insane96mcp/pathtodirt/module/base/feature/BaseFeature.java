@@ -6,7 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.util.IdTagMatcher;
+import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.pathtodirt.PathToDirt;
 import net.minecraft.resources.ResourceLocation;
@@ -35,8 +35,8 @@ public class BaseFeature extends Feature {
     @Config
     @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transofmrations above and not the default Dirt to Path transformation.")
     public static Blacklist itemBlacklist = new Blacklist(List.of(
-            new IdTagMatcher(IdTagMatcher.Type.ID, "quark:pickarang"),
-            new IdTagMatcher(IdTagMatcher.Type.ID, "quark:netherite_pickarang")
+            IdTagMatcher.newId("quark:pickarang"),
+            IdTagMatcher.newId("quark:netherite_pickarang")
     ), false);
 
     public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {

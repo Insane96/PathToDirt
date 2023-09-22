@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[46,)"
+loaderVersion="[47,)"
 license="MIT License"
 [[mods]]
 modId="pathtodirt"
@@ -13,18 +13,18 @@ Simple mod that let you transform Path and Farmland back to Dirt
 [[dependencies.pathtodirt]]
     modId="forge"
     mandatory=true
-    versionRange="[46,)"
+    versionRange="[47,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pathtodirt]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20,)"
+    versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pathtodirt]]
     modId="insanelib"
     mandatory=true
-    versionRange="[1.10.0,)"
+    versionRange="[1.11.1,)"
     ordering="NONE"
     side="BOTH"
