@@ -10,6 +10,8 @@ import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.pathtodirt.PathToDirt;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ToolActions;
@@ -76,6 +78,9 @@ public class BaseFeature extends Feature {
                 continue;
 
             event.setResult(Event.Result.ALLOW);
+            if (event.getPlayer() != null)
+                event.getPlayer().swing(event.getContext().getHand(), true);
+            event.getLevel().playSound(null, event.getPos(), SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
             event.setFinalState(transform.blockTo.defaultBlockState());
             break;
         }
