@@ -66,6 +66,7 @@ public class BaseFeature extends Feature {
     @SubscribeEvent
     public void onRightClick(BlockEvent.BlockToolModificationEvent event) {
         if (!this.isEnabled()
+                || event.getLevel().isClientSide()
                 || event.isSimulated()
                 || event.getToolAction() != ToolActions.SHOVEL_FLATTEN
                 || event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true) != null
