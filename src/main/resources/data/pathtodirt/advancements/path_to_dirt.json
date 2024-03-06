@@ -16,7 +16,7 @@
     },
     "parent": "minecraft:husbandry/root",
     "criteria": {
-        "right_click_path_with_shovel": {
+        "right_click_with_shovel": {
             "trigger": "minecraft:item_used_on_block",
             "conditions": {
                 "player": [
@@ -35,32 +35,7 @@
                 "location": [
                     {
                         "condition": "minecraft:block_state_property",
-                        "block": "minecraft:dirt_path",
-                        "properties": {}
-                    }
-                ]
-            }
-        },
-        "right_click_farmland_with_shovel": {
-            "trigger": "minecraft:item_used_on_block",
-            "conditions": {
-                "player": [
-                    {
-                        "condition": "minecraft:entity_properties",
-                        "entity": "this",
-                        "predicate": {
-                            "equipment": {
-                                "mainhand": {
-                                    "tag": "minecraft:shovels"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "location": [
-                    {
-                        "condition": "minecraft:block_state_property",
-                        "block": "minecraft:farmland",
+                        "block": "minecraft:dirt",
                         "properties": {}
                     }
                 ]
@@ -69,8 +44,7 @@
     },
     "requirements": [
         [
-            "right_click_path_with_shovel",
-            "right_click_farmland_with_shovel"
+            "right_click_with_shovel"
         ]
     ],
     "sends_telemetry_event": true
