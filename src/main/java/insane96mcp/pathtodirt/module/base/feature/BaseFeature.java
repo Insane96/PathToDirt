@@ -35,7 +35,7 @@ public class BaseFeature extends Feature {
     public static ArrayList<Transform> transformList;
 
     @Config
-    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transofmrations above and not the default Dirt to Path transformation.")
+    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transformations above and not the default Dirt to Path transformation.")
     public static Blacklist itemBlacklist = new Blacklist(List.of(
             IdTagMatcher.newId("quark:pickarang"),
             IdTagMatcher.newId("quark:netherite_pickarang")
