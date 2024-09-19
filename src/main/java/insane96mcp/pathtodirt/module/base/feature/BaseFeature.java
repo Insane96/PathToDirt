@@ -2,10 +2,10 @@ package insane96mcp.pathtodirt.module.base.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
+import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.pathtodirt.PathToDirt;
@@ -35,7 +35,7 @@ public class BaseFeature extends Feature {
     public static ArrayList<Transform> transformList;
 
     @Config
-    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transofmrations above and not the default Dirt to Path transformation.")
+    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transformations above and not the default Dirt to Path transformation.")
     public static Blacklist itemBlacklist = new Blacklist(List.of(
             IdTagMatcher.newId("quark:pickarang"),
             IdTagMatcher.newId("quark:netherite_pickarang")
