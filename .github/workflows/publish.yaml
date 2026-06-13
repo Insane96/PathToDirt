@@ -46,4 +46,7 @@ jobs:                                     #The place where you actually tell the
           files: |
             build/libs/!(*-@(slim)).jar
 
+          name: ""
+          version: 1.8.0
+
           changelog: https://github.com/Insane96/PahtToDirt/blob/1.20.1/changelog.md
