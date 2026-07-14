@@ -1,76 +1,55 @@
-package insane96mcp.pathtodirt.module.base.feature;
+package insane96mcp.pathtodirt.feature;
 
-import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.Blacklist;
-import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.data.IdTagMatcher;
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.core.feature.Feature;
+import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.core.feature.config.Blacklist;
+import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.pathtodirt.PathToDirt;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-@Label(name = "Path to Dirt")
-@LoadFeature(module = PathToDirt.RESOURCE_PREFIX + "base", canBeDisabled = false)
+@LoadFeature(name = "Path to Dirt", canBeDisabled = false)
 public class BaseFeature extends Feature {
-    private static ForgeConfigSpec.ConfigValue<List<? extends String>> transformListConfig;
+    @Config(name = "Transformations List", description = """
+            Write here a list of custom overrides when right clicking a block.
+            Format: blockFrom>blockTo
+            Both sides support optional block state properties: blockFrom[prop=val,prop2=val2]>blockTo[prop=val]
+            blockFrom can be a tag (prefixed with #), but tags cannot be combined with state properties.
+            If no state properties are specified on the source side, all states of that block match.
+            If no state properties are specified on the target side, the default state is used.
+            E.g. minecraft:farmland>minecraft:dirt will make farmland transform to dirt when right-clicked with a shovel.
+            E.g. minecraft:farmland[mositure=7]>minecraft:dirt will only match wet farmland.""")
+    public static List<String> transformListConfig = List.of("minecraft:dirt_path>minecraft:dirt", "minecraft:farmland>minecraft:dirt");
 
-    private static final List<String> transformListDefault = Arrays.asList("minecraft:dirt_path>minecraft:dirt", "minecraft:farmland>minecraft:dirt");
+    public static List<Transform> transformList = new ArrayList<>();
 
-    public static ArrayList<Transform> transformList;
-
-    @Config
-    @Label(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ToolActions.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transformations above and not the default Dirt to Path transformation.")
-    public static Blacklist itemBlacklist = new Blacklist(List.of(
-            IdTagMatcher.newId("quark:pickarang"),
-            IdTagMatcher.newId("quark:netherite_pickarang")
-    ), false);
-
-    public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-        super(module, enabledByDefault, canBeDisabled);
-    }
-
-    @Override
-    public void loadConfigOptions() {
-        super.loadConfigOptions();
-        transformListConfig = this.getBuilder()
-                .comment("""
-                        Write here a list of custom overrides when right clicking a block.
-                        Format: blockFrom>blockTo
-                        Both sides support optional block state properties: blockFrom[prop=val,prop2=val2]>blockTo[prop=val]
-                        blockFrom can be a tag (prefixed with #), but tags cannot be combined with state properties.
-                        If no state properties are specified on the source side, all states of that block match.
-                        If no state properties are specified on the target side, the default state is used.
-                        E.g. minecraft:farmland>minecraft:dirt will make farmland transform to dirt when right-clicked with a shovel.
-                        E.g. minecraft:farmland[mositure=7]>minecraft:dirt will only match wet farmland.""")
-                .defineList("Transformations List", transformListDefault, o -> o instanceof String);
-    }
+    @Config(name = "Item Blacklist", description = "Items and tags that should not perform the block transformation. By default any item that uses ItemAbilities.SHOVEL_FLATTEN will work. Note that items in this list will only be prevented from executing the transformations above and not the default Dirt to Path transformation.")
+    public static Blacklist<Item> itemBlacklist = new Blacklist<>(Blacklist.parseStringList(List.of(
+            "quark:pickarang",
+            "quark:netherite_pickarang"
+    ), Registries.ITEM), false, Registries.ITEM);
 
     @Override
     public void readConfig(final ModConfigEvent event) {
         super.readConfig(event);
-        transformList = Transform.parseList(transformListConfig.get());
+        transformList = Transform.parseList(transformListConfig);
     }
 
     @SubscribeEvent
@@ -78,17 +57,16 @@ public class BaseFeature extends Feature {
         if (!this.isEnabled()
                 || event.getLevel().isClientSide()
                 || event.isSimulated()
-                || event.getToolAction() != ToolActions.SHOVEL_FLATTEN
-                || event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true) != null
+                || event.getItemAbility() != ItemAbilities.SHOVEL_FLATTEN
+                || event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getItemAbility(), true) != null
                 || !event.getContext().getLevel().isEmptyBlock(event.getPos().above())
-                || itemBlacklist.isItemBlackOrNotWhiteListed(event.getHeldItemStack().getItem()))
+                || itemBlacklist.isBlackOrNotWhiteListed(event.getHeldItemStack().getItem()))
             return;
 
         for (Transform transform : transformList) {
             if (!transform.matches(event.getState()))
                 continue;
 
-            event.setResult(Event.Result.ALLOW);
             if (event.getPlayer() != null)
                 event.getPlayer().swing(event.getContext().getHand(), true);
             event.getLevel().playSound(null, event.getPos(), SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -126,7 +104,7 @@ public class BaseFeature extends Feature {
             for (String line : list) {
                 String[] parts = line.split(">", 2);
                 if (parts.length != 2) {
-                    LogHelper.warn("Invalid line \"%s\". Format must be blockFrom>blockTo", line);
+                    PathToDirt.LOGGER.warn("Invalid line \"{}\". Format must be blockFrom>blockTo", line);
                     continue;
                 }
 
@@ -159,17 +137,17 @@ public class BaseFeature extends Feature {
 
                 // Resolve target block (tags not allowed on target side)
                 if (toId.startsWith("#")) {
-                    LogHelper.warn("Tags are not allowed on the target side of \"%s\"", line);
+                    PathToDirt.LOGGER.warn("Tags are not allowed on the target side of \"{}\"", line);
                     continue;
                 }
                 ResourceLocation toLocation = ResourceLocation.tryParse(toId);
                 if (toLocation == null) {
-                    LogHelper.warn("%s is not a valid resource location", toId);
+                    PathToDirt.LOGGER.warn("{} is not a valid resource location", toId);
                     continue;
                 }
-                Block toBlock = ForgeRegistries.BLOCKS.getValue(toLocation);
+                Block toBlock = BuiltInRegistries.BLOCK.getOptional(toLocation).orElse(null);
                 if (toBlock == null) {
-                    LogHelper.warn("%s block doesn't exist", toId);
+                    PathToDirt.LOGGER.warn("{} block doesn't exist", toId);
                     continue;
                 }
 
@@ -181,7 +159,7 @@ public class BaseFeature extends Feature {
                         for (PropertyAndValue<?> pav : toPav)
                             stateTo = applyProperty(stateTo, pav);
                     } catch (Exception e) {
-                        LogHelper.warn("Failed to parse target state properties for \"%s\": %s", line, e.getMessage());
+                        PathToDirt.LOGGER.warn("Failed to parse target state properties for \"{}\": {}", line, e.getMessage());
                         continue;
                     }
                 }
@@ -193,24 +171,24 @@ public class BaseFeature extends Feature {
 
                 if (fromId.startsWith("#")) {
                     if (fromProps != null) {
-                        LogHelper.warn("Tags cannot be combined with state properties in \"%s\"", line);
+                        PathToDirt.LOGGER.warn("Tags cannot be combined with state properties in \"{}\"", line);
                         continue;
                     }
                     ResourceLocation tagLocation = ResourceLocation.tryParse(fromId.substring(1));
                     if (tagLocation == null) {
-                        LogHelper.warn("%s is not a valid tag resource location", fromId);
+                        PathToDirt.LOGGER.warn("{} is not a valid tag resource location", fromId);
                         continue;
                     }
                     tagFrom = TagKey.create(Registries.BLOCK, tagLocation);
                 } else {
                     ResourceLocation fromLocation = ResourceLocation.tryParse(fromId);
                     if (fromLocation == null) {
-                        LogHelper.warn("%s is not a valid resource location", fromId);
+                        PathToDirt.LOGGER.warn("{} is not a valid resource location", fromId);
                         continue;
                     }
-                    blockFrom = ForgeRegistries.BLOCKS.getValue(fromLocation);
+                    blockFrom = BuiltInRegistries.BLOCK.getOptional(fromLocation).orElse(null);
                     if (blockFrom == null) {
-                        LogHelper.warn("%s block doesn't exist", fromId);
+                        PathToDirt.LOGGER.warn("{} block doesn't exist", fromId);
                         continue;
                     }
                     if (fromProps != null) {
@@ -221,11 +199,11 @@ public class BaseFeature extends Feature {
                                     statesFrom.add(state);
                             });
                         } catch (Exception e) {
-                            LogHelper.warn("Failed to parse source state properties for \"%s\": %s", line, e.getMessage());
+                            PathToDirt.LOGGER.warn("Failed to parse source state properties for \"{}\": {}", line, e.getMessage());
                             continue;
                         }
                         if (statesFrom.isEmpty()) {
-                            LogHelper.warn("No block states matched the properties for \"%s\"", line);
+                            PathToDirt.LOGGER.warn("No block states matched the properties for \"{}\"", line);
                             continue;
                         }
                     }

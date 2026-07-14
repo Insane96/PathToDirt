@@ -1,7 +1,7 @@
 {
     "display": {
         "icon": {
-            "item": "minecraft:dirt_path"
+            "id": "minecraft:dirt_path"
         },
         "title": {
             "translate": "advancements.husbandry.path_to_dirt.title"
@@ -26,7 +26,7 @@
                         "predicate": {
                             "equipment": {
                                 "mainhand": {
-                                    "tag": "minecraft:shovels"
+                                    "items": "#minecraft:shovels"
                                 }
                             }
                         }
@@ -35,8 +35,7 @@
                 "location": [
                     {
                         "condition": "minecraft:block_state_property",
-                        "block": "minecraft:dirt",
-                        "properties": {}
+                        "block": "minecraft:dirt"
                     }
                 ]
             }

@@ -1,11 +1,3 @@
-# Changelog
-
-## 1.8.0
-* Config now supports block states!
-  * You have to re-config the mod
-
-## 1.7.5
-* Requires InsaneLib 1.15.0
-
-## 1.7.4
-* Added advancement
+# 2.0.0.0
+Ported to 1.21.1 (NeoForge)
+* Requires InsaneLib 2.4.20.2+
